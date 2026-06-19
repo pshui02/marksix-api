@@ -3,9 +3,13 @@ name: 六合彩雲端 AI 核心排程運算
 on:
   push:
     branches:
-      - main  # 每當你 push 程式碼時會觸發
+      - main
   schedule:
-    - cron: '0 14 * * *'  # 每天香港時間晚上 10:00 (UTC 14:00) 自動在雲端執行 AI 訓練
+    - cron: '0 14 * * *'
+
+# 👇 就是加了這三行！發給機器人寫入檔案的最高權限
+permissions:
+  contents: write
 
 jobs:
   build_and_predict:
@@ -33,5 +37,4 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action AI"
         git add prediction.json
-        # 只有在檔案有變動時才 commit，避免報錯
         git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 [AI 雲端引擎] 自動更新下期預測號碼池" && git push)
