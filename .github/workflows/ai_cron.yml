@@ -1,0 +1,37 @@
+name: 六合彩雲端 AI 核心排程運算
+
+on:
+  push:
+    branches:
+      - main  # 每當你 push 程式碼時會觸發
+  schedule:
+    - cron: '0 14 * * *'  # 每天香港時間晚上 10:00 (UTC 14:00) 自動在雲端執行 AI 訓練
+
+jobs:
+  build_and_predict:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 1. 複製儲存庫代碼
+      uses: actions/checkout@v3
+
+    - name: 2. 初始化 Python 環境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 3. 安裝機器學習必備套件
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy scikit-learn
+
+    - name: 4. 啟動 Python AI 引擎計算
+      run: python ai_predict.py
+
+    - name: 5. 自動將 AI 計算結果推送到 GitHub Pages
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action AI"
+        git add prediction.json
+        # 只有在檔案有變動時才 commit，避免報錯
+        git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 [AI 雲端引擎] 自動更新下期預測號碼池" && git push)
